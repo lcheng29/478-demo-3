@@ -1,52 +1,13 @@
-#include "LED.h"
-#include "Systick_timer.h"
-#include "button.h"
-
- HEAD
-// 11/27/23 marco is still a stinky poo
-
-//gonna kms
-=======
-
-int main(void){
-	// configure push-button, interrupt, and LED 
-	configure_button();
-	configure_EXTI13();
-	configure_LED_pin();
-	
-	// turn on LED to verify configuration
-	
-	turn_on_LED();
-
-	// Initialize ADC: Set up ADC1 for sampling from external input channel PA1 (ADC1_IN6). 
-	// Configure for 12-bit resolution, right data alignment, single-ended, continuous mode, 
-	// and interrupt at the end of every conversion.
-	ADC_Init();
-	
-	// After initialization, begin ADC conversion with a software trigger by setting ADSTART bit in ADC1_CR.
-	ADC1->CR |= ADC_CR_ADSTART;		
-	
-	while(1){
-		// background tasks
-
-
-	}
-}
-
-
-
-
-
-
+//****Start of working code****
 
 
 #include "stm32l476xx.h"
-
-// PA5  <--> Green LED
+#include "ADC.h"
 #define LED_PIN    5
 #define	Button_PIN	13
 #define EXTI_PIN Button_PIN
 volatile unsigned long counter = 0;
+// PA5  <--> Water Pump
 
 void configure_LED_pin(){
   // 1. Enable the clock to GPIO Port A	
@@ -63,7 +24,7 @@ void configure_LED_pin(){
 	GPIOA->PUPDR  &= ~(3<<(2*LED_PIN));  // No pull-up, no pull-down
 }
 
-void configure_Push_Button_pin(){
+void configure_Push_Button_pin(void){
   // 1. Enable the clock to GPIO Port A	
   RCC->AHB2ENR |= RCC_AHB2ENR_GPIOCEN;   
 		
@@ -88,14 +49,14 @@ void configure_EXTI(void){
 	EXTI->IMR1 |= (1<<EXTI_PIN);     //Interrupt Mask Register (IMR): 0 = marked, 1 = not masked (i.e., enabled)
 	
 	//4. Enable interrupt trigger for falling (button press) edge
-	//EXTI->RTSR1 |= (1<<EXTI_PIN);  //Rising trigger selection register (RTSR):0 = disabled, 1 = enabled
+	EXTI->RTSR1 |= (1<<EXTI_PIN);  //Rising trigger selection register (RTSR):0 = disabled, 1 = enabled
 	EXTI->FTSR1 |= (1<<EXTI_PIN);  //Falling trigger selection register (FTSR): 0 = disabled, 1 = enabled
 }
 
 
 // Modular function to turn on the LD2 LED.
 void turn_on_LED(){
-	GPIOA->ODR |= 1 << LED_PIN;
+	GPIOA->ODR |= (1 << LED_PIN);
 }
 
 // Modular function to turn off the LD2 LED.
@@ -114,26 +75,55 @@ void EXTI15_10_IRQHandler(void) {
 	if ((EXTI->PR1 & EXTI_PR1_PIF13) == EXTI_PR1_PIF13) {
 		// cleared by writing a 1 to this bit
 		EXTI->PR1 |= EXTI_PR1_PIF13;
-		toggle_LED();
+		//toggle_LED();
 		counter++;
 	}
 }
 
 
 
-int main(void){
-	int i;
-	//1. Invoke configure_LED_pin() to initialize PA5 as an output pin, interfacing with the LD2 LED.
-	configure_LED_pin();
-	//2. Invoke configure_Push_Button_pin() to initialize PC13 as an input pin, interfacing with the USER push button.
-	configure_Push_Button_pin();
-	//3. Invoke configure_EXTI() to set up edge-triggered interrput on PC13
-	configure_EXTI();
-	
-	// Infinite loop to toggle the LED, making it blink at a specified frequency.
-	while(1){
 
-	}
-		
+
+int main(void){
+
+	turn_on_LED();
+	configure_EXTI();	
+	configure_Push_Button_pin();
+configure_LED_pin();
+	// Initialize ADC: Set up ADC1 for sampling from external input channel PA1 (ADC1_IN6). 
+	// Configure for 12-bit resolution, right data alignment, single-ended, continuous mode, 
+	// and interrupt at the end of every conversion.
+
+	
+ADC1_Wakeup();
+
+// Modular function to initialize ADC external input channels
+// In this sample, PA1 (ADC12_IN6) is used
+ADC_Pin_Init();
+
+// Modular function to configure ADC common registers
+ADC_Common_Configuration();
+
+// Modular function to initialize ADC
+	ADC_Init();
+	
+	
+	// After initialization, begin ADC conversion with a software trigger by setting ADSTART bit in ADC1_CR.
+	ADC1->CR |= ADC_CR_ADSTART;		
+	
+	
+	//1. Invoke configure_LED_pin() to initialize PA5 as an output pin, interfacing with the LD2 LED.
+	
+
+	// Infinite loop to toggle the LED, making it blink at a specified frequency.
+while(1){
+	//turn_on_LED();
+/*if (adc_result > 1000){
+		turn_on_LED();
 }
- bf9456bf0fe444b5ac795c10e38ec069ccc35a51
+		
+else {
+		turn_off_LED();*/
+}
+
+}
