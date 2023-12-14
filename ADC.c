@@ -181,15 +181,14 @@ void ADC1_2_IRQHandler(void){
 		// Read the sampled data from ADC1_DR and store it in the global variable 'adc_result'
 		adc_result = ADC1->DR;
 		
-		if (adc_result > 1000){
-		turn_on_LED();
-}
+		if (adc_result > 2000){
+			turn_on_PUMP();
+		}
 		
-else {
-		turn_off_LED();
-	}
+		else {
+			turn_off_PUMP();
+		}
 	
-}
+	}
 
 }
-
