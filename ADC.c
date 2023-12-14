@@ -93,6 +93,7 @@ void ADC_Pin_Init(void){
 //--------------------------------------------------------------------------------------------------	
 void ADC_Init(void){
 	
+	
 	// 1. Disable ADC1 before further configurations: set ADC1_CR register's ADEN bit to 0 
 	//    0: Disabled; 1: Enabled
 	ADC1->CR &= ~ADC_CR_ADEN;  
@@ -117,14 +118,16 @@ void ADC_Init(void){
 	// 7. After calibration is done, the ADCx module can be enabled for the subsequent configurations.
 	//    Set ADEN bit in ADC1_CR register to enable ADC1.
 	ADC1->CR |= ADC_CR_ADEN;  
-	// 8. Invoke ADC_Pin_Init() to initilize ADC input channel(s).
+	// 8. Invoke ADC_Pin_Init() to initilize ADC input channel(s). ////STOPPP*******
 	//    In this sample, one analog input channel PA1 (ADC12_IN6) is used as Input Channel 6 for ADC1. 
 	ADC_Pin_Init();
+	
+
 	
 	// 9. Configure the ADC data resolution and alignment via ADC Configuration Register ADCx_CFGR
 	//    RES[1:0]- Data Resolution (00 = 12-bit, 01 = 10-bit, 10 = 8-bit, 11 = 6-bit)
 	//    ALIGN - Data Alignment (0 = Right alignment, 1 = Left alignment)
-	ADC1->CFGR &= ~ADC_CFGR_RES; //select 12-bit resolution     	
+	ADC1->CFGR &= ~ADC_CFGR_RES; //select 12-bit resolution   //******STOP  	
 	ADC1->CFGR &= ~ADC_CFGR_ALIGN; //select right alignment  	 
 		
 	// 10. Set up the ADC Regular Sequence in ADCx_SQR registers
@@ -138,7 +141,7 @@ void ADC_Init(void){
 	//     In this sample, only the 1st conversion channel SQR1[4:0] is used
 	ADC1->SQR1 &= ~ADC_SQR1_SQ1;	// Clear SQR1[4:0] (bits 10:6) in ADC1_SQR1
 	ADC1->SQR1 |=  ( 6U << 6 );   // Set channel 6 (connected to PA1) for the 1st conversion
-	
+	//******STOP
 	// 11. Set ADC single/continuous conversion mode for regular conversions via ADCx_CFGR, CONT (bit 13):
 	//     0: single conversion; 1: continuous conversion
 	ADC1->CFGR |= ADC_CFGR_CONT;  // Enable continuous conversion mode 
@@ -156,10 +159,10 @@ void ADC_Init(void){
 	ADC1->IER |= ADC_IER_EOC;  // Enable End of Regular Conversion interrupt
 	NVIC_EnableIRQ(ADC1_2_IRQn); // Enable the ADC1_2 interrupt (shared by ADC1 and ADC2) in NVIC 
 	
-	// 14. Wait till ADC is ready to accept conversion.
+	// 14. Wait till ADC is ready to accept conversion. //stop******
 	//     The ADRDY bit in ADC1_ISR is set by hardware after the ADC has been enabled (bit ADEN=1) and when the ADC
 	//     reaches a state where it is ready to accept conversion requests.
-	while((ADC1->ISR & ADC_ISR_ADRDY) == 0); 
+	while((ADC1->ISR & ADC_ISR_ADRDY) == 0); //stop*********
 	
 }
 
@@ -170,23 +173,26 @@ void ADC_Init(void){
 //-------------------------------------------------------------------------------------------
 void ADC1_2_IRQHandler(void){
 	
-	// Check if the interrupt is triggered by ADC1 End of Conversion (EOC) 
+	// Check if the interrupt is triggered by ADC1 End of Conversion (EOC) //stop
 	if ((ADC1->ISR & ADC_ISR_EOC) == ADC_ISR_EOC) {
 		
 		// Clear the interrupt by writing 1 to it or by reading the corresponding ADC1_DR register
 		ADC1->ISR |= ADC_ISR_EOC;
+
 		// Read the sampled data from ADC1_DR and store it in the global variable 'adc_result'
 		adc_result = ADC1->DR;
-	}
+		
 
+		// moisture sensor operates on negative logic, dry soil being high (4095), wet soil being low (0)
+		// if statement to check if the moisture detected by the sensor is low, turning off the pump
+		if (adc_result > 1000){
+		turn_on_trans();
+		}
+		// else statement to check if the moisture detected by the sensor is sufficiently high, turning off the pump
+		else { 
+		turn_off_trans();
+	}
+	
 }
 
-// 4095 = completely dry
-// ~3000 = barely touching liquid
-// ~2000 = pressed against towel
-// 0 - 600 = completely immersed in water
-
-
-
-
-
+}
