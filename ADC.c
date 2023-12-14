@@ -52,7 +52,7 @@ void ADC_Common_Configuration(){
 	//   In this sample, HCLK/1 (01) is selected, meaning that the ADC input clock is 
 	//	 synchronous to AHB clock, equivalent to the default processor clock 4MHz
 	ADC123_COMMON->CCR &= ~ADC_CCR_CKMODE;   //clear both bits first
-	ADC123_COMMON->CCR |=  ADC_CCR_CKMODE_0; // set CKMODE[1:0] to ‘01’
+	ADC123_COMMON->CCR |=  ADC_CCR_CKMODE_0; // set CKMODE[1:0] to â€˜01â€™
 	
 	// 2. Configure the ADC clock prescaler through ADC_CCR register, field PRESC[3:0]
 	//    ADC_CCR register, field PRESC[3:0] values:
@@ -180,6 +180,11 @@ void ADC1_2_IRQHandler(void){
 	}
 
 }
+
+// 4095 = completely dry
+// ~3000 = barely touching liquid
+// ~2000 = pressed against towel
+// 0 - 600 = completely immersed in water
 
 
 

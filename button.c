@@ -48,19 +48,11 @@ void EXTI15_10_IRQHandler(void) {
 		// increases counter value with each button press
 		counter++;
 		
-		// counter determines frequency of played sound based on modulus 7. 0 remainder defaults to the 494 Hz sound
-		if(counter % 7 == 1){ 
+		// counter determines intensity of water pouring, maybe have 3 modes
+		if(counter % 3 == 1){ 
 			SysTick_Init(2000000/262); // C4 262 Hz
-    } else if(counter % 7 == 2){
+    } else if(counter % 3 == 2){
       SysTick_Init(2000000/294); // D4 294 Hz
-		} else if (counter % 7 == 3){
-      SysTick_Init(2000000/330); // E4 330 Hz
-		} else if (counter % 7 == 4){
-      SysTick_Init(2000000/349); // F4 349 Hz
-		} else if (counter % 7 == 5){
-      SysTick_Init(2000000/392); // G4 392 Hz
-		} else if (counter % 7  == 6){
-			SysTick_Init(2000000/440); // A4 440 Hz
 		} else {
 			SysTick_Init(2000000/494); // B4 494 Hz
 		}
