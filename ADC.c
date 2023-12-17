@@ -93,7 +93,6 @@ void ADC_Pin_Init(void){
 //--------------------------------------------------------------------------------------------------	
 void ADC_Init(void){
 	
-	
 	// 1. Disable ADC1 before further configurations: set ADC1_CR register's ADEN bit to 0 
 	//    0: Disabled; 1: Enabled
 	ADC1->CR &= ~ADC_CR_ADEN;  
@@ -184,13 +183,14 @@ void ADC1_2_IRQHandler(void){
 		
 
 		// moisture sensor operates on negative logic, dry soil being high (4095), wet soil being low (0)
-		// if statement to check if the moisture detected by the sensor is low, turning off the pump
+
+		// if statement to check if the moisture detected by the sensor is low, turning off the pump.
 		if (adc_result > 1000){
-		turn_on_trans();
+		turn_on_transistor();
 		}
-		// else statement to check if the moisture detected by the sensor is sufficiently high, turning off the pump
+		// else statement to check if the moisture detected by the sensor is sufficiently high, turning off the pump.
 		else { 
-		turn_off_trans();
+		turn_off_transistor();
 	}
 	
 }

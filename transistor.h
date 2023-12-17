@@ -5,15 +5,12 @@
 
 
 // Modular function to initialize PA5 as an output pin, interfacing with the transistor.
-void configure_trans_pin();
+void configure_transistor_pin();
 
 // Modular function to turn on the transistor.
-void turn_on_trans();
+void turn_on_transistor();
 
 // Modular function to turn off the transistor.
-void turn_off_trans();
-
-// Modular function to toggle the transistor.
-void toggle_trans();
+void turn_off_transistor();
 
 #endif /* __STM32L476G_LED_H */
