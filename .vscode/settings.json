@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "MLTable": "yaml",
+        "stm32l476xx.h": "c"
+    }
+}

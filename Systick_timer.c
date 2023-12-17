@@ -12,7 +12,7 @@ void SysTick_Init(uint32_t Reload){
 	SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;		
 	
 	// 2. Program reload value by configuring SysTick Reload Value Register. 
-	SysTick->LOAD = Reload - 1;    //Note: Time Interval = (Content of the register + 1) × Source_Clock_Period
+	SysTick->LOAD = Reload - 1;    //Note: Time Interval = (Content of the register + 1) ï¿½ Source_Clock_Period
 	
 	// 3. Clear reload value by configuring SysTick Current Value Register. 
 	SysTick->VAL = 0;
@@ -35,6 +35,7 @@ void SysTick_Init(uint32_t Reload){
 // SysTick Exception Handler
 //-------------------------------------------------------------------------------------------
 void SysTick_Handler(void){
-	toggle_LED(); //toggle LED once
+	ADC1->CR |= ADC_CR_ADSTART;
 }
+
 	
