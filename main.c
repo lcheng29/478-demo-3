@@ -1,16 +1,8 @@
-//****Start of working code****
-
 #include "stm32l476xx.h"
 #include "ADC.h"
 #include "button.h"
 #include "transistor.h"
 #include "Systick_timer.h"
-
- HEAD
-// 11/27/23 marco is still a stinky poo
-
-//gonna kms
-=======
 
 int main(void){
 
@@ -30,4 +22,5 @@ int main(void){
 	
 	while(1){ // background tasks
 	}
+}
 
