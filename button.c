@@ -1,10 +1,11 @@
 #include "button.h"
-
+#include "stm32l476xx.h"
 
 #define	Button_PIN	13
 #define EXTI_PIN Button_PIN
 volatile unsigned long counter = 0;
 
+// On-board switch code to turn on or off board functionality.
 
 void configure_Push_Button_pin(void){
   // 1. Enable the clock to GPIO Port A	
@@ -44,5 +45,12 @@ void EXTI15_10_IRQHandler(void) {
 		EXTI->PR1 |= EXTI_PR1_PIF13;
 		//toggle_trans();
 		counter++;
+
+		if (counter % 2 == 1){
+			ADC1->CR |= ADC_CR_ADSTART; // 1st button press enables ADC.
+			} else {
+				ADC1->CR |= ADC_CR_ADSTP; // Next button press disables ADC, black reset switch has the same functionality.
+			}
+		}
 	}
 }
